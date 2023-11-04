@@ -1,10 +1,9 @@
 <script setup>
+import Degree from './components/degree.vue'
 </script>
 
 <template>
-  <div>
-    
-  </div>
+  <Degree></Degree>
 </template>
 
 <style scoped>

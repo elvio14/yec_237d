@@ -5,46 +5,53 @@ import jwt from "jsonwebtoken"
 
 const router = express.Router()
 
-const userSchema = new mongoose.Schema({
-    username: {type: String, required: true, unique: true},
+export const userSchema = new mongoose.Schema({
+    firstName: {type: String, required: true},
+    lastName: {type: String, required: true},
+    number: {type: String},
     email: {type: String, required: true},
     password: {type: String, required: true},
-    isAdmin: {type: Boolean, default: false}
+    role: {type: String, default: 'student'},
+    degreeCodes: [{type: String}],
+    teachingCodes: [{type: String}]
 },
 {timestamps: true}
 )
 
-const User = mongoose.model('User', userSchema)
-
 //Register
 router.post("/register", async (req, res)=>{
-    const newUser = new User({
-        username: req.body.username,
+    const newUser = new User_({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        number: req.body.number,
         email: req.body.email,
         password: CryptoJS.AES.encrypt(req.body.password, process.env.PASS_SEC).toString(),
-    });
+        role: req.body.role,
+        degreeCodes: req.body.degreeCodes,
+        teachingCodes: req.body.teachingCodes,
+    })
 
     try {
-        const savedUser = await newUser.save();
-        res.status(201).json(savedUser);
+        const savedUser = await newUser.save()
+        res.status(201).json(savedUser)
     }   catch (err) {
-        res.status(500).json(err);
+        res.status(500).json(err)
     }
 })
 
 router.post("/login", async (req, res)=>{
     try {
-        const user = await User.findOne({ username: req.body.username});
+        const user = await User.findOne({ username: req.body.username})
         !user && res.status(401).json("Oops, Wrong credentials!");
 
         const hashedPassword = CryptoJS.AES.decrypt(
             user.password,
             process.env.PASS_SEC
         );
-        const OriPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
+        const OriPassword = hashedPassword.toString(CryptoJS.enc.Utf8)
 
         OriPassword !== req.body.password &&
-            res.status(401).json("Wrong password..");
+            res.status(401).json("Wrong password..")
 
             const accessToken = jwt.sign({
                 id:user._id,
@@ -54,12 +61,10 @@ router.post("/login", async (req, res)=>{
             {expiresIn: "3d"}
         );
 
-        const { password, ...others } = user._doc;
+        const { password, ...others } = user._doc
 
-        res.status(200).json({...others, accessToken});
+        res.status(200).json({...others, accessToken})
     } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json(err)
     }
 })
-
-export {router}

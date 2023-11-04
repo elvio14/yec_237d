@@ -1,10 +1,10 @@
 <script setup>
 import Degree from './components/degree.vue'
 import Courses from './components/course.vue'
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted} from 'vue';
 
 const showTerm = ref('f1')
-  
+
 </script>
 
 <template>

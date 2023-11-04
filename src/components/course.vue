@@ -1,15 +1,18 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { ref } from 'vue';
-import { defineProps } from 'vue'
-
-const courses = ref()
 
 const props = defineProps({
-    codes: [String],
+    codes: {
+        type: Array,
+        default: () => ([]),
+        validator: (codes) => codes.every(code => typeof code === 'string')
+    }
 })
 
-const codes = props.codes
+const courses = ref([])
+const codes = ['POL1017', 'ART1018']
+const code = 'BSCS'
 
 onMounted(() => {
       fetch('http://localhost:5000/api/course/all')
@@ -21,12 +24,29 @@ onMounted(() => {
             console.log(error)
         });
     });
+    
+const filteredCourses = computed(()=> {
+    return courses.value.length > 0
+    ? courses.value.filter(course => codes.includes(course.code))
+    : []
+})
+
 
 </script>
 <template>
-    <div id="id">
-        <h2>Degree:{{ degree.value.title }}</h2>
+    <div id="course" v-for="course in filteredCourses" :key="course.code">
+        <h3>{{course.code}} - {{course.title }}</h3>
+        <h4>credit: {{ course.credit }}</h4>
+        <h4>Schedule: {{ course.days }}, {{ course.time }}</h4>
+        <h4>Location: {{ course.location }}</h4>
+        <h4>Educator: {{ course.educator }}</h4>
+        <h4>Prerequisites: {{ course.prereq }}</h4>
     </div>
 </template>
 <style>
+#course{
+
+    border: solid 1px;
+    border-color: aquamarine;
+}
 </style>

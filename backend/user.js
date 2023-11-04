@@ -13,6 +13,7 @@ export const userSchema = new mongoose.Schema({
     password: {type: String, required: true},
     role: {type: String, default: 'student'},
     degreeCodes: [{type: String}],
+    completedCourses: [{type: String}],
     teachingCodes: [{type: String}]
 },
 {timestamps: true}

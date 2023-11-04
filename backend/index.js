@@ -5,10 +5,20 @@ import dotenv from 'dotenv'
 // import {router as courseRoute} from './course.js'
 import {courseSchema} from './course.js'
 import {degreeSchema} from './degree.js'
+import {userSchema} from './user.js'
+import cors from 'cors'
+
+const corsOptions = {
+    allowedHeaders: ['Content-Type', 'token'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    origin: '*'
+}
 
 export const app = express()
 app.use(express.json())
 dotenv.config()
+
+app.use(cors(corsOptions))
 
 mongoose.connect(
     process.env.MONGODB_URI
@@ -27,7 +37,7 @@ const User_ = mongoose.model('user_', userSchema);
 
 app.get("/api/user/:number", async (req,res) => {
     try{
-        const user = await Course.find({number: req.params.number});
+        const user = await User_.find({number: req.params.number});
         
         res.status(200).json(user);
     }catch(err){
